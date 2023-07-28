@@ -7,11 +7,32 @@ def draw_title():
     title_img = font.render(title, True, BLACK, GREEN)
     screen.blit(title_img, (150, 50))
 
-# グリッド線の描画
-def draw_grid():
-    for i in range(1, 3):
-        pygame.draw.line(screen, BLACK, (i * 50, i * 200), (screen_width, i * 200), 5)
-        pygame.draw.line(screen, BLACK, (i * 200, 0), (i * 200, screen_height), 5)
+# トータルの描画
+def draw_total():
+    total_count_img = font.render(str(total_count), True, BLACK)
+    screen.blit(total_count_img, (270, 150))
+
+# ボックスの描画
+def draw_box():
+    for i in range(0, 3):
+        pygame.draw.line(screen, BLACK, (175 * i + 75, 300), (175 * i + 75, 500), 5)
+        pygame.draw.line(screen, BLACK, (175 * i + 175, 300), (175 * i + 175, 500), 5)
+        pygame.draw.line(screen, BLACK, (175 * i + 75, 300), (175 * i + 175, 300), 5)
+        pygame.draw.line(screen, BLACK, (175 * i + 75, 500), (175 * i + 175, 500), 5)
+
+# 追加する数値の描画
+def draw_select():
+    for i in range(0, 3):
+        plus_img = font.render('+' + str(plus[i]), True, BLACK)
+        screen.blit(plus_img, (175 * i + 85, 310))
+        count_img = font.render(str(count[i]), True, RED)
+        screen.blit(count_img, (175 * i + 85, 400))
+
+# 勝者の確認
+def check_winner():
+    game_over = False
+    if total_count >= 31:
+        return True
 
 # ウィンドウの作成
 screen_width = 600
@@ -31,6 +52,9 @@ font = pygame.font.SysFont(None, 100)
 
 title = "31 game!"
 total_count = 0
+plus = [1, 2, 3]
+count = [1, 2, 3]
+select_img = []
 
 # メインループ#####################################################
 run = True
@@ -43,19 +67,34 @@ while run:
     # タイトルの描画
     draw_title()
 
-    total_count_img = font.render(str(total_count), True, BLACK)
-    screen.blit(total_count_img, (280, 200))
+    # トータルの描画
+    draw_total()
+
+    # ボックスの描画
+    draw_box()
+
+    # ボックスの描画
+    draw_select()
 
     # マウスの位置を取得
     mx, my = pygame.mouse.get_pos()
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
+    # 勝者の確認
+    game_over = check_winner()
+
+    if not game_over:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
                 run = False
-    
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    run = False
+            for i in range(0,3):
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if (mx > 175 * i + 75 and mx < 175 * i + 175) and (my > 300 and my < 500):
+                        total_count += plus[i]
+                        for index, n in enumerate(count):
+                            count[index] += plus[i]
 
 
     # 更新
