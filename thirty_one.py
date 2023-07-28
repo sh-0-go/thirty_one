@@ -34,8 +34,10 @@ def check_winner():
     if total_count >= 31:
         game_over = True
     if game_over:
-        finish_img = font.render('You Lose', True, BLACK, BLUE)
-        screen.blit(finish_img, (150, 250))
+        finish_text_img = font.render('You Lose', True, BLACK, BLUE)
+        screen.blit(finish_text_img, (150, 220))
+        reset_text_img = font.render('click to reset', True, BLACK, BLUE)
+        screen.blit(reset_text_img, (100, 300))
 
     return game_over
 
