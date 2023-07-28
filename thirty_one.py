@@ -14,19 +14,43 @@ def draw_total():
 
 # ボックスの描画
 def draw_box():
-    for i in range(0, 3):
-        pygame.draw.line(screen, BLACK, (175 * i + 75, 300), (175 * i + 75, 500), 5)
-        pygame.draw.line(screen, BLACK, (175 * i + 175, 300), (175 * i + 175, 500), 5)
-        pygame.draw.line(screen, BLACK, (175 * i + 75, 300), (175 * i + 175, 300), 5)
-        pygame.draw.line(screen, BLACK, (175 * i + 75, 500), (175 * i + 175, 500), 5)
+    if total_count < 29: # 合計が30未満の時
+        for i in range(0, 3):
+            pygame.draw.line(screen, BLACK, (175 * i + 75, 300), (175 * i + 75, 500), 5)
+            pygame.draw.line(screen, BLACK, (175 * i + 175, 300), (175 * i + 175, 500), 5)
+            pygame.draw.line(screen, BLACK, (175 * i + 75, 300), (175 * i + 175, 300), 5)
+            pygame.draw.line(screen, BLACK, (175 * i + 75, 500), (175 * i + 175, 500), 5)
+    elif total_count == 29: # 合計が29の時
+        for i in range(0, 2):
+            pygame.draw.line(screen, BLACK, (175 * i + 150, 300), (175 * i + 150, 500), 5)
+            pygame.draw.line(screen, BLACK, (175 * i + 250, 300), (175 * i + 250, 500), 5)
+            pygame.draw.line(screen, BLACK, (175 * i + 150, 300), (175 * i + 250, 300), 5)
+            pygame.draw.line(screen, BLACK, (175 * i + 150, 500), (175 * i + 250, 500), 5)
+    elif total_count == 30: # 合計が30の時
+        pygame.draw.line(screen, BLACK, (250, 300), (250, 500), 5)
+        pygame.draw.line(screen, BLACK, (350, 300), (350, 500), 5)
+        pygame.draw.line(screen, BLACK, (250, 300), (350, 300), 5)
+        pygame.draw.line(screen, BLACK, (250, 500), (350, 500), 5)
 
 # 追加する数値の描画
 def draw_select():
-    for i in range(0, 3):
-        plus_img = font.render('+' + str(plus[i]), True, BLACK)
-        screen.blit(plus_img, (175 * i + 85, 310))
-        count_img = font.render(str(count[i]), True, RED)
-        screen.blit(count_img, (175 * i + 85, 400))
+    if total_count < 29: # 合計が30未満の時
+        for i in range(0, 3):
+            plus_img = font.render('+' + str(plus[i]), True, BLACK)
+            screen.blit(plus_img, (175 * i + 85, 310))
+            count_img = font.render(str(count[i]), True, RED)
+            screen.blit(count_img, (175 * i + 85, 400))
+    elif total_count == 29: # 合計が29の時
+        for i in range(0, 2):
+            plus_img = font.render('+' + str(plus[i]), True, BLACK)
+            screen.blit(plus_img, (175 * i + 160, 310))
+            count_img = font.render(str(count[i]), True, RED)
+            screen.blit(count_img, (175 * i + 160, 400))
+    elif total_count == 30: # 合計が30の時
+        plus_img = font.render('+' + str(plus[0]), True, BLACK)
+        screen.blit(plus_img, (260, 310))
+        count_img = font.render(str(count[0]), True, RED)
+        screen.blit(count_img, (260, 400))
 
 # 勝者の確認
 def check_winner():
@@ -95,12 +119,24 @@ while run:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     run = False
-            for i in range(0,3):
+            if total_count < 29:
+                for i in range(0,3):
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        if (mx > 175 * i + 75 and mx < 175 * i + 175) and (my > 300 and my < 500):
+                            total_count += plus[i]
+                            for index, n in enumerate(count):
+                                count[index] += plus[i]
+            elif total_count == 29: # 合計が29の時
+                for i in range(0,2):
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        if (mx > 175 * i + 150 and mx < 175 * i + 250) and (my > 300 and my < 500):
+                            total_count += plus[i]
+                            for index, n in enumerate(count):
+                                count[index] += plus[i]
+            elif total_count == 30: # 合計が30の時
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    if (mx > 175 * i + 75 and mx < 175 * i + 175) and (my > 300 and my < 500):
-                        total_count += plus[i]
-                        for index, n in enumerate(count):
-                            count[index] += plus[i]
+                    if (mx > 250 and mx < 350) and (my > 300 and my < 500):
+                        total_count += plus[0]
 
     # イベントの取得
     for event in pygame.event.get():
