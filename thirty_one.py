@@ -32,7 +32,12 @@ def draw_select():
 def check_winner():
     game_over = False
     if total_count >= 31:
-        return True
+        game_over = True
+    if game_over:
+        finish_img = font.render('You Lose', True, BLACK, BLUE)
+        screen.blit(finish_img, (150, 250))
+
+    return game_over
 
 # ウィンドウの作成
 screen_width = 600
@@ -54,7 +59,6 @@ title = "31 game!"
 total_count = 0
 plus = [1, 2, 3]
 count = [1, 2, 3]
-select_img = []
 
 # メインループ#####################################################
 run = True
@@ -95,6 +99,19 @@ while run:
                         total_count += plus[i]
                         for index, n in enumerate(count):
                             count[index] += plus[i]
+
+    # イベントの取得
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                run = False
+        for i in range(0,3):
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if game_over:
+                    total_count = 0
+                    count = [1, 2, 3]
 
 
     # 更新
