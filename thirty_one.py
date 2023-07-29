@@ -52,6 +52,11 @@ def draw_select():
         count_img = font.render(str(count[0]), True, RED)
         screen.blit(count_img, (260, 400))
 
+# スタートの文字を描画
+def draw_start():
+    start_text_img = font.render('click to start', True, BLACK, BLUE)
+    screen.blit(start_text_img, (100, 300))
+
 # 勝者の確認
 def check_winner():
     game_over = False
@@ -86,8 +91,30 @@ total_count = 0
 plus = [1, 2, 3]
 count = [1, 2, 3]
 
+# AIの手を選択
+def ai_move():
+    global total_count
+    if total_count == 0:
+        total_count = 2
+        for i in range(0, 3):
+            count[i] += 2
+    elif (total_count - 2) % 4 == 1:
+        total_count += 3
+        for i in range(0, 3):
+            count[i] += 3
+    elif (total_count - 2) % 4 == 2:
+        total_count += 2
+        for i in range(0, 3):
+            count[i] += 2
+    elif (total_count - 2) % 4 == 3:
+        total_count += 1
+        for i in range(0, 3):
+            count[i] += 1
+
 # メインループ#####################################################
 run = True
+start_check = False
+player_turn = False # プレイヤーのターンかどうかを管理
 
 while run:
 
@@ -97,14 +124,18 @@ while run:
     # タイトルの描画
     draw_title()
 
-    # トータルの描画
-    draw_total()
+    if start_check:
+        # トータルの描画
+        draw_total()
 
-    # ボックスの描画
-    draw_box()
+        # ボックスの描画
+        draw_box()
 
-    # ボックスの描画
-    draw_select()
+        # ボックスの描画
+        draw_select()
+    else:
+        # スタートの文字を描画
+        draw_start()
 
     # マウスの位置を取得
     mx, my = pygame.mouse.get_pos()
@@ -112,13 +143,17 @@ while run:
     # 勝者の確認
     game_over = check_winner()
 
-    if not game_over:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
                 run = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    run = False
+        if not start_check:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                start_check = True
+
+        if start_check and not game_over and player_turn:
             if total_count < 29:
                 for i in range(0,3):
                     if event.type == pygame.MOUSEBUTTONDOWN:
@@ -126,6 +161,7 @@ while run:
                             total_count += plus[i]
                             for index, n in enumerate(count):
                                 count[index] += plus[i]
+                            player_turn = False
             elif total_count == 29: # 合計が29の時
                 for i in range(0,2):
                     if event.type == pygame.MOUSEBUTTONDOWN:
@@ -138,19 +174,14 @@ while run:
                     if (mx > 250 and mx < 350) and (my > 300 and my < 500):
                         total_count += plus[0]
 
-    # イベントの取得
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                run = False
-        for i in range(0,3):
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if game_over:
-                    total_count = 0
-                    count = [1, 2, 3]
+        elif start_check and not game_over and not player_turn:
+            ai_move()
+            player_turn = True
 
+        elif game_over:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                total_count = 0
+                count = [1, 2, 3]
 
     # 更新
     pygame.display.update()
