@@ -94,22 +94,18 @@ count = [1, 2, 3]
 # AIの手を選択
 def ai_move():
     global total_count
-    if total_count == 0:
-        total_count = 2
-        for i in range(0, 3):
-            count[i] += 2
-    elif (total_count - 2) % 4 == 1:
-        total_count += 3
-        for i in range(0, 3):
-            count[i] += 3
-    elif (total_count - 2) % 4 == 2:
+    if total_count % 4 == 0:
         total_count += 2
         for i in range(0, 3):
             count[i] += 2
-    elif (total_count - 2) % 4 == 3:
+    elif total_count % 4 == 1:
         total_count += 1
         for i in range(0, 3):
             count[i] += 1
+    elif total_count % 4 == 3:
+        total_count += 3
+        for i in range(0, 3):
+            count[i] += 3
 
 # メインループ#####################################################
 run = True
