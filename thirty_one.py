@@ -94,6 +94,7 @@ count = [1, 2, 3]
 # AIの手を選択
 def ai_move():
     global total_count
+    
     if total_count % 4 == 0:
         total_count += 2
         for i in range(0, 3):
@@ -106,6 +107,9 @@ def ai_move():
         total_count += 3
         for i in range(0, 3):
             count[i] += 3
+
+    # AIの手を選択した後に遅延を追加
+    pygame.time.delay(500)  # 1000ミリ秒（1秒）の遅延
 
 # メインループ#####################################################
 run = True
@@ -145,9 +149,6 @@ while run:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 run = False
-        if not start_check:
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                start_check = True
 
         if start_check and not game_over and player_turn:
             if total_count < 29:
@@ -174,10 +175,14 @@ while run:
             ai_move()
             player_turn = True
 
-        elif game_over:
+        if game_over:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 total_count = 0
                 count = [1, 2, 3]
+        
+        if not start_check:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                start_check = True
 
     # 更新
     pygame.display.update()
