@@ -242,7 +242,7 @@ while run:
         elif start_check and not game_over and not player_turn:
             add_count = ai_move()
             player_turn = True
-            # AIのターンが始まった時刻を記録します
+            # AIのターンが始まった時刻を記録
             click_time = pygame.time.get_ticks()
 
         if game_over:
