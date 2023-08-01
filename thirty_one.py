@@ -68,6 +68,8 @@ def check_winner():
         screen.blit(finish_text_img, (150, 240))
         reset_text_img = font.render('click to reset', True, BLACK, BLUE)
         screen.blit(reset_text_img, (100, 320))
+        # 終了後のモンスターの描画
+        create_monster.the_after_monster(screen)
 
     return game_over
 
@@ -97,20 +99,25 @@ def ai_move():
     global total_count
 
     if total_count % 4 == 0:
+        add_count = 2
         total_count += 2
         for i in range(0, 3):
             count[i] += 2
     elif total_count % 4 == 1:
+        add_count = 1
         total_count += 1
         for i in range(0, 3):
             count[i] += 1
     elif total_count % 4 == 3:
+        add_count = 3
         total_count += 3
         for i in range(0, 3):
             count[i] += 3
 
     # AIの手を選択した後に遅延を追加
     pygame.time.delay(500)  # 1000ミリ秒（1秒）の遅延
+
+    return add_count
 
 # 序盤のモンスターのセリフ
 def the_start_comment(screen):
@@ -121,6 +128,20 @@ def the_start_comment(screen):
     start_comment_height = int(start_comment_img.get_height() * 0.7)
     start_comment_img = pygame.transform.scale(start_comment_img, (start_comment_width, start_comment_height))
     screen.blit(start_comment_img, (260, 150))
+
+def draw_add_count(add_count):
+    if add_count == 1:
+        add_count_img = font.render('+1', True, BLACK)
+    elif add_count == 2:
+        add_count_img = font.render('+2', True, BLACK)
+    elif add_count == 3:
+        add_count_img = font.render('+3', True, BLACK)
+
+    # セリフのサイズを0.7倍に縮小
+    add_count_width = int(add_count_img.get_width() * 0.7)
+    add_count_height = int(add_count_img.get_height() * 0.7)
+    add_count_img = pygame.transform.scale(add_count_img, (add_count_width, add_count_height))
+    screen.blit(add_count_img, (380, 150))
 
 # メインループ#####################################################
 run = True
@@ -168,10 +189,6 @@ while run:
 
         # 序盤のモンスターのセリフ
         the_start_comment(screen)
-    
-    if game_over:
-        # 終了後のモンスターの描画
-        create_monster.the_after_monster(screen)
 
     # マウスの位置を取得
     mx, my = pygame.mouse.get_pos()
@@ -208,18 +225,22 @@ while run:
                         total_count += plus[0]
 
         elif start_check and not game_over and not player_turn:
-            ai_move()
+            add_count = ai_move()
             player_turn = True
 
         if game_over:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 total_count = 0
                 count = [1, 2, 3]
+                player_turn = False
         
         if not start_check:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 start_check = True
 
+
+    if player_turn and start_check and not game_over:
+        draw_add_count(add_count)
     # 更新
     pygame.display.update()
 
