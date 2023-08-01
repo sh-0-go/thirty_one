@@ -112,9 +112,20 @@ def ai_move():
     # AIの手を選択した後に遅延を追加
     pygame.time.delay(500)  # 1000ミリ秒（1秒）の遅延
 
+# 序盤のモンスターのセリフ
+def the_start_comment(screen):
+    start_comment_img = font.render('HELLO!', True, BLACK)
+    
+    # セリフのサイズを0.7倍に縮小
+    start_comment_width = int(start_comment_img.get_width() * 0.7)
+    start_comment_height = int(start_comment_img.get_height() * 0.7)
+    start_comment_img = pygame.transform.scale(start_comment_img, (start_comment_width, start_comment_height))
+    screen.blit(start_comment_img, (260, 150))
+
 # メインループ#####################################################
 run = True
 start_check = False
+game_over = False
 player_turn = False # プレイヤーのターンかどうかを管理
 
 while run:
@@ -124,6 +135,9 @@ while run:
     
     # タイトルの描画
     draw_title()
+
+    # モンスターの描画
+    create_monster.draw_monster(screen)
 
     if start_check:
         # トータルの描画
@@ -138,12 +152,26 @@ while run:
         if total_count <= 10:
             # 序盤のモンスターの描画
             create_monster.the_opening_monster(screen)
+
+        elif total_count > 10 and total_count <= 20:
+            # 中盤のモンスターの描画
+            create_monster.the_middle_monster(screen)
+        elif total_count > 20 and total_count <= 30:
+            # 終盤のモンスターの描画
+            create_monster.the_ending_monster(screen)
     else:
         # スタートの文字を描画
         draw_start()
 
         # スタート画面のモンスターの描画
         create_monster.the_start_monster(screen)
+
+        # 序盤のモンスターのセリフ
+        the_start_comment(screen)
+    
+    if game_over:
+        # 終了後のモンスターの描画
+        create_monster.the_after_monster(screen)
 
     # マウスの位置を取得
     mx, my = pygame.mouse.get_pos()
