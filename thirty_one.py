@@ -115,7 +115,7 @@ def ai_move():
             count[i] += 3
 
     # AIの手を選択した後に遅延を追加
-    pygame.time.delay(500)  # 1000ミリ秒（1秒）の遅延
+    pygame.time.delay(500)  # 500ミリ秒（0.5秒）の遅延
 
     return add_count
 
@@ -142,6 +142,19 @@ def draw_add_count(add_count):
     add_count_height = int(add_count_img.get_height() * 0.7)
     add_count_img = pygame.transform.scale(add_count_img, (add_count_width, add_count_height))
     screen.blit(add_count_img, (380, 150))
+
+# プレイヤーのターンを描画
+def draw_player_turn():
+    your_turn_img = font.render('Your turn', True, BLACK)
+    
+    # セリフのサイズを0.7倍に縮小
+    your_turn_width = int(your_turn_img.get_width() * 0.7)
+    your_turn_height = int(your_turn_img.get_height() * 0.7)
+    your_turn_img = pygame.transform.scale(your_turn_img, (your_turn_width, your_turn_height))
+    screen.blit(your_turn_img, (190, 520))
+
+# 遅延の時間を初期化
+click_time = 0
 
 # メインループ#####################################################
 run = True
@@ -204,29 +217,33 @@ while run:
                 run = False
 
         if start_check and not game_over and player_turn:
-            if total_count < 29:
-                for i in range(0,3):
+            current_time = pygame.time.get_ticks()
+            if current_time - click_time >= 50:
+                if total_count < 29:
+                    for i in range(0,3):
+                        if event.type == pygame.MOUSEBUTTONDOWN:
+                            if (mx > 175 * i + 75 and mx < 175 * i + 175) and (my > 300 and my < 500):
+                                total_count += plus[i]
+                                for index, n in enumerate(count):
+                                    count[index] += plus[i]
+                                player_turn = False
+                elif total_count == 29: # 合計が29の時
+                    for i in range(0,2):
+                        if event.type == pygame.MOUSEBUTTONDOWN:
+                            if (mx > 175 * i + 150 and mx < 175 * i + 250) and (my > 300 and my < 500):
+                                total_count += plus[i]
+                                for index, n in enumerate(count):
+                                    count[index] += plus[i]
+                elif total_count == 30: # 合計が30の時
                     if event.type == pygame.MOUSEBUTTONDOWN:
-                        if (mx > 175 * i + 75 and mx < 175 * i + 175) and (my > 300 and my < 500):
-                            total_count += plus[i]
-                            for index, n in enumerate(count):
-                                count[index] += plus[i]
-                            player_turn = False
-            elif total_count == 29: # 合計が29の時
-                for i in range(0,2):
-                    if event.type == pygame.MOUSEBUTTONDOWN:
-                        if (mx > 175 * i + 150 and mx < 175 * i + 250) and (my > 300 and my < 500):
-                            total_count += plus[i]
-                            for index, n in enumerate(count):
-                                count[index] += plus[i]
-            elif total_count == 30: # 合計が30の時
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if (mx > 250 and mx < 350) and (my > 300 and my < 500):
-                        total_count += plus[0]
+                        if (mx > 250 and mx < 350) and (my > 300 and my < 500):
+                            total_count += plus[0]
 
         elif start_check and not game_over and not player_turn:
             add_count = ai_move()
             player_turn = True
+            # AIのターンが始まった時刻を記録します
+            click_time = pygame.time.get_ticks()
 
         if game_over:
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -240,6 +257,7 @@ while run:
 
 
     if player_turn and start_check and not game_over:
+        draw_player_turn()
         draw_add_count(add_count)
     # 更新
     pygame.display.update()
